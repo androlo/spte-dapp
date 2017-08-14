@@ -9,7 +9,8 @@
   "scripts": {
     "start": "webpack-dev-server --config webpack-dev-server.config.js --progress --inline --colors",
     "build": "webpack --config webpack-production.config.js --progress --colors",
-    "flow": "flow || true"
+    "flow": "flow || true",
+    "test": "jest"
   },
   "private": true,
   "devDependencies": {
@@ -21,6 +22,7 @@
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-1": "^6.24.1",
     "flow-bin": "^0.52.0",
+    "flowtype-loader": "^0.2.2",
     "html-webpack-plugin": "^2.24.1",
     "jest": "^20.0.4",
     "transfer-webpack-plugin": "^0.1.4",

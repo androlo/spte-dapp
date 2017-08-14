@@ -99,7 +99,7 @@ class PatriciaTrieContract {
      */
     async insert(key: string, value: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            this._contract.insert(key, value, (err, txHash) => {
+            this._contract.insert(key, value, {gas: 3000000}, (err, txHash) => {
                 if (err) {
                     return reject(err);
                 }
