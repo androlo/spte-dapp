@@ -7,13 +7,13 @@ import {
 } from '../constants/actions'
 
 import type {State, Action} from '../types/types'
-import type {SelectionData} from '../actions/trieSelection'
+import type {NullSelection, SelectionData} from '../actions/trieSelection'
 import type {Bytes32} from "../../web3/types";
 
 export type TrieMap = {|
     +keysToHashes: Map<string, Bytes32>,
     +hashesToValues: Map<Bytes32, string>,
-    +valuesToKeys: Map<string, string>
+    +keysToValues: Map<string, string>
 |}
 
 export type TrieSelection = {
@@ -23,20 +23,15 @@ export type TrieSelection = {
 }
 
 const initialState: TrieSelection = {
-    currentTrie: createSelectionData(),
-    previousTrie: createSelectionData(),
+    currentTrie: createNullSelection(),
+    previousTrie: createNullSelection(),
     trieMap: createTrieMap()
 };
 
-function createSelectionData() {
+export function createNullSelection(): NullSelection {
     return {
-        type: "",
-        hash: "",
-        data: "",
-        length: 0,
-        key: "",
-        keyHash: "",
-        value: ""
+        type: '',
+        element: null
     }
 }
 
@@ -44,7 +39,7 @@ function createTrieMap(): TrieMap {
     return {
         keysToHashes: new Map(),
         hashesToValues: new Map(),
-        valuesToKeys: new Map()
+        keysToValues: new Map()
     };
 }
 
@@ -62,7 +57,7 @@ export default (state: TrieSelection = initialState, action: Action) => {
             const newTrieMap = {...trieMap};
             newTrieMap.keysToHashes.set(payload.key, payload.keyHash);
             newTrieMap.hashesToValues.set(payload.valueHash, payload.value);
-            newTrieMap.valuesToKeys.set(payload.value, payload.key);
+            newTrieMap.keysToValues.set(payload.key, payload.value);
             return {...state, trieMap: newTrieMap};
         case CONTRACT_DEPLOYED:
             return initialState;

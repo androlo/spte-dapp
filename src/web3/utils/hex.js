@@ -198,7 +198,7 @@ export function asciiToHex(str: string, totalBytes?: number): string {
         hex += n.length < 2 ? `0${n}` : n;
     }
     if (totalBytes) {
-        hex += (new Array(2 * totalBytes - hex.length + 1).join('0'));
+        hex += new Array(2 * totalBytes - hex.length + 1).join('0');
     }
     return `0x${hex}`;
 }
@@ -256,7 +256,7 @@ export function utf8ToHex(str: string, totalBytes?: number) {
         hex += n.length < 2 ? `0${n}` : n;
     }
     if (totalBytes) {
-        hex += (new Array(2 * totalBytes - hex.length + 1).join('0'));
+        hex += new Array(2 * totalBytes - hex.length + 1).join('0');
     }
     return `0x${hex}`;
 }

@@ -5,7 +5,7 @@ import {Card, CardContent} from 'material-ui'
 import {List, ListItem, ListItemText} from 'material-ui'
 import {connect} from 'react-redux'
 import {getTrieSelection} from '../reducers/trieSelection'
-import type {SelectionData} from "../actions/trieSelection";
+import type {EdgeSelection, NodeSelection, SelectionData} from "../actions/trieSelection";
 import type {Dispatch, State} from "../types/types";
 import type {TrieSelection} from "../reducers/trieSelection";
 
@@ -38,75 +38,72 @@ class TrieSelectionContainer extends React.Component {
 }
 
 function generateSelectedList(trieSelection: SelectionData) {
-    if (trieSelection.type === "") {
-        return (
-            <List dense>
-                <ListItem>
-                    <ListItemText
-                        primary="Selection"
-                        secondary="-"
-                    />
-                </ListItem>
-            </List>
-        );
-    } else if (trieSelection.type === "node") {
-        return (
-            <List dense>
-                <ListItem>
-                    <ListItemText
-                        primary="Selection"
-                        secondary="Node"
-                    />
-                </ListItem>
-                <ListItem>
-                    <ListItemText
-                        primary="Key"
-                        secondary={trieSelection.key}
-                    />
-                </ListItem>
-                <ListItem>
-                    <ListItemText
-                        primary="keyHash"
-                        secondary={trieSelection.keyHash}
-                    />
-                </ListItem>
-                <ListItem>
-                    <ListItemText
-                        primary="Value"
-                        secondary={trieSelection.value}
-                    />
-                </ListItem>
-                <ListItem>
-                    <ListItemText
-                        primary="Hash"
-                        secondary={trieSelection.hash}
-                    />
-                </ListItem>
-            </List>
-        );
-    } else if (trieSelection.type === "edge") {
-        return (
-            <List dense>
-                <ListItem>
-                    <ListItemText
-                        primary="Selection"
-                        secondary="Edge"
-                    />
-                </ListItem>
-                <ListItem>
-                    <ListItemText
-                        primary="Data"
-                        secondary={trieSelection.data}
-                    />
-                </ListItem>
-                <ListItem>
-                    <ListItemText
-                        primary="Length"
-                        secondary={trieSelection.length}
-                    />
-                </ListItem>
-            </List>
-        );
+    switch (trieSelection.type) {
+        case '':
+            return (
+                <List dense>
+                    <ListItem>
+                        <ListItemText
+                            primary="Selection"
+                            secondary="-"
+                        />
+                    </ListItem>
+                </List>
+            );
+        case 'node':
+            const node = (trieSelection: NodeSelection).element;
+            return (
+                <List dense>
+                    <ListItem>
+                        <ListItemText
+                            primary="Selection"
+                            secondary="Node"
+                        />
+                    </ListItem>
+                    <ListItem>
+                        <ListItemText
+                            primary="Value"
+                            secondary={node.value}
+                        />
+                    </ListItem>
+                    <ListItem>
+                        <ListItemText
+                            primary="Value Hash"
+                            secondary={node.hash}
+                        />
+                    </ListItem>
+                </List>
+            );
+        case 'edge':
+            const edgeLabel = (trieSelection: EdgeSelection).element.trieLabel;
+            return (
+                <List dense>
+                    <ListItem>
+                        <ListItemText
+                            primary="Selection"
+                            secondary="Edge"
+                        />
+                    </ListItem>
+                    <ListItem>
+                        <ListItemText
+                            primary="Data"
+                            secondary={edgeLabel.data}
+                        />
+                    </ListItem>
+                    <ListItem>
+                        <ListItemText
+                            primary="Data Binary"
+                            secondary={edgeLabel.dataBin}
+                        />
+                    </ListItem>
+                    <ListItem>
+                        <ListItemText
+                            primary="Length"
+                            secondary={edgeLabel.length}
+                        />
+                    </ListItem>
+                </List>
+            );
     }
 }
 

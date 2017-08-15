@@ -9,30 +9,28 @@ import {
     TRIE_UPDATING,
     TRIE_UPDATE,
     TRIE_UPDATE_ERROR,
-    TRIE_NO_UPDATE
+    TRIE_NO_UPDATE,
+    TRIE_SET_VIEW
 } from '../constants/actions'
+import type {TrieView} from "../reducers/trie";
+import {hashToBin256} from "./utils";
 
-export type NodeData = {|
+export type NodeData = {
     +id: number,
-    +label: string,
     +hash: Bytes32,
-    +key: string,
-    +keyHash: Bytes32,
-    +value: string,
-    +color: ?string,
-|}
+    +value: string
+}
 
-export type EdgeData = {|
+export type EdgeData = {
     +id: number,
     +from: number,
     +to: number,
-    +label: number,
     +arrows: 'to',
     +trieLabel: {
         +data: Bytes32,
         +length: number
     }
-|}
+}
 
 export type TrieData = {|
     +rootHash: Bytes32,
@@ -56,6 +54,11 @@ export type TrieNoUpdateAction = {|
 export type TrieUpdateErrorAction = {|
     +type: typeof TRIE_UPDATE_ERROR,
     +payload: string
+|}
+
+export type TrieSetViewAction = {|
+    +type: typeof TRIE_SET_VIEW,
+    +payload: TrieView
 |}
 
 export type TrieAction = TrieUpdatingAction | TrieUpdateAction | TrieNoUpdateAction | TrieUpdateErrorAction
@@ -93,6 +96,13 @@ function setTrieUpdateError(err: string): TrieUpdateErrorAction {
     return {
         type: TRIE_UPDATE_ERROR,
         payload: err
+    };
+}
+
+export function setTrieView(view: TrieView): TrieSetViewAction {
+    return {
+        type: TRIE_SET_VIEW,
+        payload: view
     };
 }
 
@@ -136,12 +146,8 @@ export function updateTrie(): ThunkAction {
         if (rootEdge.node === B32_ZERO && rootEdge.length === 0) {
             nodes.push({
                 id: 0,
-                label: rootEdge.node.substring(0, 8) + "...",
                 hash: rootEdge.node,
-                key: "-",
-                keyHash: Bytes32,
-                value: "-",
-                color: null
+                value: ""
             });
         } else {
             try {
@@ -163,33 +169,26 @@ export function updateTrie(): ThunkAction {
             const children = await patriciaTrieContract.getNode(edge.node);
             const id = nodeId++;
             const trieMap = trieSelection.trieMap;
-            let value = "-";
-            let key = "-";
-            let keyHash = "-";
+            let value = "";
             if(trieMap.hashesToValues.has(edge.node)) {
                 value = trieMap.hashesToValues.get(edge.node);
-                key = trieMap.valuesToKeys.get(value);
-                keyHash = trieMap.keysToHashes.get(key);
             }
-            const node = {
+
+            nodes.push({
                 id: id,
-                label: edge.node.substring(2, 10) + "...",
                 hash: edge.node,
-                key: key,
-                keyHash: keyHash,
-                value: value,
-                color: key === "-" ? null : "#53ba04"
-            };
-            nodes.push(node);
+                value: value
+            });
+
             if (parentId >= 0) {
                 edges.push({
                     id: edgeId++,
                     from: parentId,
-                    label: edge.length,
                     to: id,
                     arrows: 'to',
                     trieLabel: {
                         data: edge.data,
+                        dataBin: hashToBin256(edge.data),
                         length: edge.length
                     }
                 });
@@ -204,5 +203,4 @@ export function updateTrie(): ThunkAction {
         }
 
     };
-
 }

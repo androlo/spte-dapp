@@ -4,19 +4,26 @@ import {
     TRIE_SET_PREVIOUS_SELECTED
 } from '../constants/actions'
 
-import type {Bytes32} from "../../web3/types"
 import type {Dispatch, GetState, ThunkAction} from "../types/types";
+import type {EdgeData, NodeData} from "./trie";
 
 export type SelectionType = '' | 'node' | 'edge'
 
-export type SelectionData = {|
-    +type: SelectionType,
-    +hash: Bytes32,
-    +data: Bytes32,
-    +length: number,
-    +key: string,
-    +keyHash: Bytes32,
-    +value: string
+export type SelectionData = NullSelection | NodeSelection | EdgeSelection
+
+export type NullSelection = {|
+    type: '',
+    data: null,
+|}
+
+export type NodeSelection = {|
+    type: 'node',
+    data: NodeData,
+|}
+
+export type EdgeSelection = {|
+    type: 'edge',
+    data: EdgeData,
 |}
 
 export type CurrentSelectedAction = {|
@@ -47,13 +54,7 @@ function setPreviousSelected(selected: SelectionData): PreviousSelectedAction {
 
 export function setSelectedElement(
     current: boolean,
-    type: SelectionType,
-    hash: Bytes32,
-    data: Bytes32,
-    length: number,
-    key: string,
-    keyHash: Bytes32,
-    value: string
+    data: SelectionData
 ): ThunkAction {
     return (dispatch: Dispatch, getState: GetState): void => {
         if (current) {
@@ -65,48 +66,10 @@ export function setSelectedElement(
                 throw new Error("set selected trie element action no-op: trie not set");
             }
         }
-        let payload = null;
-        switch (type) {
-            case "":
-                payload = {
-                    type: type,
-                    hash: "",
-                    data: "",
-                    length: 0,
-                    key: "",
-                    keyHash: "",
-                    value: ""
-                };
-                break;
-            case "node":
-                payload = {
-                    type: type,
-                    hash: hash,
-                    data: "",
-                    length: 0,
-                    key: key,
-                    keyHash: keyHash,
-                    value: value
-                };
-                break;
-            case "edge":
-                payload = {
-                    type: type,
-                    hash: "",
-                    data: data,
-                    length: length,
-                    key: "",
-                    keyHash: "",
-                    value: ""
-                };
-                break;
-            default:
-                throw new Error("Unknown type name passed to 'setSelectedElement");
-        }
         if (current) {
-            dispatch(setCurrentSelected(payload));
+            dispatch(setCurrentSelected(data));
         } else {
-            dispatch(setPreviousSelected(payload));
+            dispatch(setPreviousSelected(data));
         }
     };
 }
