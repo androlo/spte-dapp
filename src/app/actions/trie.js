@@ -12,29 +12,33 @@ import {
     TRIE_NO_UPDATE
 } from '../constants/actions'
 
-export type NodeData = {
-    id: number,
-    label: string,
-    hash: Bytes32
-}
+export type NodeData = {|
+    +id: number,
+    +label: string,
+    +hash: Bytes32,
+    +key: string,
+    +keyHash: Bytes32,
+    +value: string,
+    +color: ?string,
+|}
 
-export type EdgeData = {
-    id: number,
-    from: number,
-    to: number,
-    label: number,
-    arrows: 'to',
-    trieLabel: {
-        data: Bytes32,
-        length: number
+export type EdgeData = {|
+    +id: number,
+    +from: number,
+    +to: number,
+    +label: number,
+    +arrows: 'to',
+    +trieLabel: {
+        +data: Bytes32,
+        +length: number
     }
-}
+|}
 
-export type TrieData = {
+export type TrieData = {|
     +rootHash: Bytes32,
     +nodes: NodeData[],
     +edges: EdgeData[]
-}
+|}
 
 export type TrieUpdatingAction = {|
     +type: typeof TRIE_UPDATING
@@ -98,6 +102,7 @@ export function updateTrie(): ThunkAction {
         const deploy = getState().deploy;
         const insert = getState().insert;
         const trie = getState().trie;
+        const trieSelection = getState().trieSelection;
 
         if (!deploy.contractAddress) {
             return Promise.reject(new Error("update trie action no-op: contract not deployed"));
@@ -111,6 +116,7 @@ export function updateTrie(): ThunkAction {
 
         const patriciaTrieContract = PatriciaTrieContractProvider.patriciaTrieContract();
         dispatch(setTrieUpdating());
+
         let nodeId = 0;
         let edgeId = 0;
         const nodes: NodeData[] = [];
@@ -131,7 +137,11 @@ export function updateTrie(): ThunkAction {
             nodes.push({
                 id: 0,
                 label: rootEdge.node.substring(0, 8) + "...",
-                hash: rootEdge.node
+                hash: rootEdge.node,
+                key: "-",
+                keyHash: Bytes32,
+                value: "-",
+                color: null
             });
         } else {
             try {
@@ -141,7 +151,6 @@ export function updateTrie(): ThunkAction {
                 return Promise.resolve();
             }
         }
-
         dispatch(setTrieUpdate({
             rootHash: rootHash,
             nodes: nodes.sort(compare),
@@ -153,10 +162,23 @@ export function updateTrie(): ThunkAction {
         async function parseTrie(parentId: number, edge: Edge): Promise<void> {
             const children = await patriciaTrieContract.getNode(edge.node);
             const id = nodeId++;
+            const trieMap = trieSelection.trieMap;
+            let value = "-";
+            let key = "-";
+            let keyHash = "-";
+            if(trieMap.hashesToValues.has(edge.node)) {
+                value = trieMap.hashesToValues.get(edge.node);
+                key = trieMap.valuesToKeys.get(value);
+                keyHash = trieMap.keysToHashes.get(key);
+            }
             const node = {
                 id: id,
                 label: edge.node.substring(2, 10) + "...",
-                hash: edge.node
+                hash: edge.node,
+                key: key,
+                keyHash: keyHash,
+                value: value,
+                color: key === "-" ? null : "#53ba04"
             };
             nodes.push(node);
             if (parentId >= 0) {

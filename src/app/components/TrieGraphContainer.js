@@ -69,14 +69,14 @@ class TrieGraphContainer extends React.Component {
             if (params.nodes.length === 1) {
                 const nodeId = params.nodes[0];
                 const node = trie.nodes[nodeId];
-                this.props.setSelectedElement(true, "node", node.hash, "", 0);
+                this.props.setSelectedElement(true, "node", node.hash, "", 0, node.key, node.keyHash, node.value);
             }
             else if (params.edges.length === 1) {
                 const edgeId = params.edges[0];
                 const label = trie.edges[edgeId].trieLabel;
-                this.props.setSelectedElement(true, "edge", "", label.data, label.length);
+                this.props.setSelectedElement(true, "edge", "", label.data, label.length, "", "", "");
             } else {
-                this.props.setSelectedElement(true, "", "", "", 0);
+                this.props.setSelectedElement(true, "", "", "", 0, "", "", "");
             }
         }.bind(this));
 
@@ -89,14 +89,14 @@ class TrieGraphContainer extends React.Component {
             if (params.nodes.length === 1) {
                 const nodeId = params.nodes[0];
                 const node = trie.nodes[nodeId];
-                this.props.setSelectedElement(false, "node", node.hash, "", 0);
+                this.props.setSelectedElement(false, "node", node.hash, "", 0, node.key, node.keyHash, node.value);
             }
             else if (params.edges.length === 1) {
                 const edgeId = params.edges[0];
                 const label = trie.edges[edgeId].trieLabel;
-                this.props.setSelectedElement(false, "edge", "", label.data, label.length);
+                this.props.setSelectedElement(false, "edge", "", label.data, label.length, "", "", "");
             } else {
-                this.props.setSelectedElement(false, "", "", "", 0);
+                this.props.setSelectedElement(false, "", "", "", 0, "", "", "");
             }
         }.bind(this));
     }
@@ -150,11 +150,11 @@ const mapStateToProps = (state: State): {
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): {
-    setSelectedElement: (current: boolean, type: SelectionType, hash: Bytes32, data: Bytes32, length: number) => void
+    setSelectedElement: (current: boolean, type: SelectionType, hash: Bytes32, data: Bytes32, length: number, key: string, keyHash: Bytes32, value: string) => void
 } => {
     return {
-        setSelectedElement: (current: boolean, type: SelectionType, hash: Bytes32, data: Bytes32, length: number) => {
-            dispatch(setSelectedElement(current, type, hash, data, length))
+        setSelectedElement: (current: boolean, type: SelectionType, hash: Bytes32, data: Bytes32, length: number, key: string, keyHash: Bytes32, value: string) => {
+            dispatch(setSelectedElement(current, type, hash, data, length, key, keyHash, value))
         }
     }
 };

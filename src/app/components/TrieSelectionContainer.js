@@ -60,6 +60,24 @@ function generateSelectedList(trieSelection: SelectionData) {
                 </ListItem>
                 <ListItem>
                     <ListItemText
+                        primary="Key"
+                        secondary={trieSelection.key}
+                    />
+                </ListItem>
+                <ListItem>
+                    <ListItemText
+                        primary="keyHash"
+                        secondary={trieSelection.keyHash}
+                    />
+                </ListItem>
+                <ListItem>
+                    <ListItemText
+                        primary="Value"
+                        secondary={trieSelection.value}
+                    />
+                </ListItem>
+                <ListItem>
+                    <ListItemText
                         primary="Hash"
                         secondary={trieSelection.hash}
                     />

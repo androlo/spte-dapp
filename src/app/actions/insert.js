@@ -13,6 +13,8 @@ import {
     INSERT_VALUE_ERROR
 } from '../constants/actions'
 import type {Dispatch, GetState, ThunkAction} from "../types/types";
+import type {Bytes32} from "../../web3/types";
+import Web3Provider from "../lib/Web3Provider";
 
 export type InsertingAction = {|
     +type: typeof INSERT_INSERTING
@@ -62,9 +64,10 @@ function setInserting(): InsertingAction {
     }
 }
 
-function setInsertDone(): InsertDoneAction {
+function setInsertDone(key: string, keyHash: Bytes32, value: string, valueHash: Bytes32): InsertDoneAction {
     return {
-        type: INSERT_INSERT_DONE
+        type: INSERT_INSERT_DONE,
+        payload: {key, keyHash, value, valueHash}
     };
 }
 
@@ -149,7 +152,10 @@ export function insert(): ThunkAction {
 
         try {
             await PatriciaTrieContractProvider.patriciaTrieContract().insert(key, value);
-            dispatch(setInsertDone());
+            const web3 = Web3Provider.web3();
+            const keyHash = web3.sha3(key);
+            const valueHash = web3.sha3(value);
+            dispatch(setInsertDone(key, keyHash, value, valueHash));
             dispatch(updateTrie());
         } catch (err) {
             dispatch(setInsertionError(err.message))

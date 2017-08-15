@@ -13,7 +13,7 @@ export type Trie = {
     +updating: boolean,
     +updateError: string,
     +currentTrie: ?TrieData,
-    +previousTrie: ?TrieData
+    +previousTrie: ?TrieData,
 }
 
 const initialState: Trie = {
@@ -30,17 +30,16 @@ export default (state: Trie = initialState, action: Action) => {
         case TRIE_UPDATING:
             return {...state, updating: true, updateError: null};
         case TRIE_UPDATE:
-            if (action.payload) {
-                return {...initialState, currentTrie: action.payload, previousTrie: state.currentTrie};
-            }
-            throw new Error("Type error in action");
+            return {
+                updating: false,
+                updateError: null,
+                currentTrie: action.payload,
+                previousTrie: state.currentTrie
+            };
         case TRIE_NO_UPDATE:
             return {...state, updating: false, updateError: null};
         case TRIE_UPDATE_ERROR:
-            if (action.payload) {
-                return {...initialState, updateError: action.payload};
-            }
-            throw new Error("Type error in action");
+            return {...initialState, updateError: action.payload};
         default:
             return state;
     }

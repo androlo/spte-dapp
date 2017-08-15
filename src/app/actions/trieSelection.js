@@ -1,6 +1,6 @@
 // @flow
 import {
-    TRIE_SET_SELECTED,
+    TRIE_SET_CURRENT_SELECTED,
     TRIE_SET_PREVIOUS_SELECTED
 } from '../constants/actions'
 
@@ -13,16 +13,19 @@ export type SelectionData = {|
     +type: SelectionType,
     +hash: Bytes32,
     +data: Bytes32,
-    +length: number
+    +length: number,
+    +key: string,
+    +keyHash: Bytes32,
+    +value: string
 |}
 
 export type CurrentSelectedAction = {|
-    +type: typeof TRIE_SET_SELECTED,
+    +type: typeof TRIE_SET_CURRENT_SELECTED,
     +payload: SelectionData
 |}
 
 export type PreviousSelectedAction = {|
-    +type: typeof TRIE_SET_SELECTED,
+    +type: typeof TRIE_SET_PREVIOUS_SELECTED,
     +payload: SelectionData
 |}
 
@@ -30,7 +33,7 @@ export type TrieSelectionAction = CurrentSelectedAction | PreviousSelectedAction
 
 function setCurrentSelected(selected: SelectionData): CurrentSelectedAction {
     return {
-        type: TRIE_SET_SELECTED,
+        type: TRIE_SET_CURRENT_SELECTED,
         payload: selected
     }
 }
@@ -42,7 +45,16 @@ function setPreviousSelected(selected: SelectionData): PreviousSelectedAction {
     }
 }
 
-export function setSelectedElement(current: boolean, type: SelectionType, hash: Bytes32, data: Bytes32, length: number): ThunkAction {
+export function setSelectedElement(
+    current: boolean,
+    type: SelectionType,
+    hash: Bytes32,
+    data: Bytes32,
+    length: number,
+    key: string,
+    keyHash: Bytes32,
+    value: string
+): ThunkAction {
     return (dispatch: Dispatch, getState: GetState): void => {
         if (current) {
             if (!getState().trie.currentTrie) {
@@ -60,7 +72,10 @@ export function setSelectedElement(current: boolean, type: SelectionType, hash: 
                     type: type,
                     hash: "",
                     data: "",
-                    length: 0
+                    length: 0,
+                    key: "",
+                    keyHash: "",
+                    value: ""
                 };
                 break;
             case "node":
@@ -68,7 +83,10 @@ export function setSelectedElement(current: boolean, type: SelectionType, hash: 
                     type: type,
                     hash: hash,
                     data: "",
-                    length: 0
+                    length: 0,
+                    key: key,
+                    keyHash: keyHash,
+                    value: value
                 };
                 break;
             case "edge":
@@ -76,13 +94,15 @@ export function setSelectedElement(current: boolean, type: SelectionType, hash: 
                     type: type,
                     hash: "",
                     data: data,
-                    length: length
+                    length: length,
+                    key: "",
+                    keyHash: "",
+                    value: ""
                 };
                 break;
             default:
                 throw new Error("Unknown type name passed to 'setSelectedElement");
         }
-
         if (current) {
             dispatch(setCurrentSelected(payload));
         } else {
