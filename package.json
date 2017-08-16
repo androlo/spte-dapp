@@ -10,7 +10,7 @@
     "start": "webpack-dev-server --config webpack-dev-server.config.js --progress --inline --colors",
     "build": "webpack --config webpack-production.config.js --progress --colors",
     "flow": "flow || true",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "private": true,
   "devDependencies": {

@@ -151,13 +151,21 @@ class TrieGraphContainer extends React.Component {
                     </FormControl>
                     <Grid container spacing={8}>
                         <Grid item xs={6}>
-                            <h3>Current Trie</h3>
-                            <h5>{currentTrie ? currentTrie.rootHash : "-"}</h5>
+                            <Typography type="headline">
+                                Current Trie
+                            </Typography>
+                            <Typography type="body1">
+                                Root: {currentTrie ? currentTrie.rootHash : "-"}
+                            </Typography>
                             <div id="current-trie-graph" style={graphStyle}/>
                         </Grid>
                         <Grid item xs={6}>
-                            <h3>Previous Trie</h3>
-                            <h5>{previousTrie ? previousTrie.rootHash : "-"}</h5>
+                            <Typography type="headline">
+                                Previous Trie
+                            </Typography>
+                            <Typography type="body1">
+                                Root: {previousTrie ? previousTrie.rootHash : "-"}
+                            </Typography>
                             <div id="previous-trie-graph" style={graphStyle}/>
                         </Grid>
                     </Grid>
@@ -178,7 +186,7 @@ function formatNode(view: TrieView): (nodeData: NodeData) => NodeData {
                 nodeData.label = nodeData.hash.substr(2, 12) + '...';
                 break;
             case 'utf-8':
-                nodeData.label = nodeData.value.length > 10 ? nodeData.value.substr(0, 10) : nodeData.value;
+                nodeData.label = nodeData.value.length > 10 ? nodeData.value.substr(0, 10) + "..." : nodeData.value;
                 break;
         }
         if (nodeData.value !== "") {
@@ -190,9 +198,12 @@ function formatNode(view: TrieView): (nodeData: NodeData) => NodeData {
 
 function formatEdge(view: TrieView): (edgeData: EdgeData) => EdgeData {
     return (edgeData: EdgeData): EdgeData => {
+        const dataBin = edgeData.trieLabel.dataBin;
+        const length = edgeData.trieLabel.length;
+        const dataLabel = length > 12 ? dataBin.substr(0, 10) + "..." : dataBin.substr(0, length);
         switch (view) {
             case 'hex':
-                edgeData.label = `D: ${edgeData.trieLabel.dataBin.substring(0, 10) + "..."}\nL: ${edgeData.trieLabel.length}`;
+                edgeData.label = `D: ${dataLabel}\nL: ${length}`;
                 break;
             case 'utf-8':
                 edgeData.label = "";

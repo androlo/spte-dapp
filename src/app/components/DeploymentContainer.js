@@ -60,8 +60,8 @@ class DeploymentContainer extends Component {
                     </Button>
                 </CardActions>
                 <CardContent>
-                    {deploy.deploying &&
-                    <LinearProgress mode="indeterminate"/>
+                    {deploying &&
+                    <LinearProgress />
                     }
                     {deploymentError &&
                     <div style={style}>Deployment error: {deploymentError} </div>

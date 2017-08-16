@@ -8,11 +8,16 @@ import {getInsert} from '../reducers/insert'
 import {getTrie} from '../reducers/trie'
 import {insert, setKeyField, setValueField} from '../actions/insert'
 import {connect} from 'react-redux'
+import {CircularProgress} from 'material-ui'
 
 import type {Dispatch, PTInputEvent, State} from "../types/types"
 import type {Deploy} from "../reducers/deploy"
 import type {Insert} from "../reducers/insert"
 import type {Trie} from "../reducers/trie"
+
+const style = {
+    color: "#892d34"
+};
 
 /**
  * A simple example of `AppBar` with an icon on the right.
@@ -34,6 +39,7 @@ class InsertContainer extends React.Component {
         const contractReady = !!this.props.deploy.contractAddress;
         const inserting = this.props.insert.inserting;
         const updating = this.props.trie.updating;
+        const insertError = this.props.insert.insertError;
         const keyError = this.props.insert.keyError;
         const valueError = this.props.insert.valueError;
         const insertDisabled = !contractReady || inserting || updating || !!keyError || !!valueError;
@@ -60,6 +66,10 @@ class InsertContainer extends React.Component {
                         margin="dense"
                         onChange={this.props.setValue}
                     />
+                    {inserting && <CircularProgress />}
+                    {!!insertError &&
+                    <div style={style}>Insert error: {insertError} </div>
+                    }
                 </CardActions>
             </Card>
         );
