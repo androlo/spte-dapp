@@ -6,6 +6,7 @@ import trie from './trie';
 import trieSelection from './trieSelection'
 import getProof from './getProof'
 import keccak256 from './keccak256'
+import keysAndValues from './keysAndValues'
 
 export default combineReducers({
     ethereum,
@@ -14,5 +15,6 @@ export default combineReducers({
     trie,
     trieSelection,
     getProof,
-    keccak256
+    keccak256,
+    keysAndValues
 })

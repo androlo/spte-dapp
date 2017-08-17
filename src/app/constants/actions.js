@@ -40,3 +40,6 @@ export const GET_PROOF_VALUE = 'GET_PROOF_VALUE';
 // Keccak256
 export const KECCAK_256_GET = 'KECCAK_256_GET';
 export const KECCAK_256_INPUT = 'KECCAK_256_INPUT';
+
+// Keys and Values
+export const KNVS_SET_TABLE_VIEW = 'KNVS_SET_TABLE_VIEW';

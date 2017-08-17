@@ -3,7 +3,7 @@ pragma solidity ^0.4.0;
 import {D} from "./data.sol";
 import {Utils} from "./utils.sol";
 
-contract UtilsTestConstants {
+contract TestConstants {
     uint constant MAX_LENGTH = 256;
     uint constant UINT256_ZEROES = 0;
     uint constant UINT256_ONES = ~uint(0);
@@ -11,7 +11,7 @@ contract UtilsTestConstants {
     bytes32 constant B32_ONES = bytes32(UINT256_ONES);
 }
 
-contract UtilsBitsTests is UtilsTestConstants {
+contract UtilsBitsTests is TestConstants {
 
     // should throw
     function testZeroBitsNotSet() constant returns (bool) {
@@ -53,7 +53,7 @@ contract UtilsBitsTests is UtilsTestConstants {
 }
 
 
-contract UtilsPrefixTests is UtilsTestConstants {
+contract UtilsPrefixTests is TestConstants {
 
     // should throw
     function testChopFirstBitFailLengthIsZero() constant returns (bool) {
@@ -234,7 +234,7 @@ contract UtilsPrefixTests is UtilsTestConstants {
 }
 
 
-contract UtilsSplitTests is UtilsTestConstants {
+contract UtilsSplitTests is TestConstants {
 
     // Should throw
     function testSplitAtFailPosGreaterThanLength() constant returns (bool) {

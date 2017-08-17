@@ -7,6 +7,8 @@ import TrieGraphContainer from './TrieGraphContainer'
 import TrieSelectionContainer from './TrieSelectionContainer'
 import GetProofContainer from './GetProofContainer'
 import Keccak256Container from './Keccak256Container'
+import KeysAndValuesContainer from './KeysAndValuesContainer'
+
 // Display the page.
 const PatriciaTrie = () => (
     <div>
@@ -20,6 +22,7 @@ const PatriciaTrie = () => (
             <Grid item xs={12}>
                 <TrieGraphContainer/>
                 <TrieSelectionContainer/>
+                <KeysAndValuesContainer/>
             </Grid>
             <Grid item xs={12}>
                 <GetProofContainer/>

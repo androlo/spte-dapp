@@ -4,7 +4,7 @@ import {
     TRIE_UPDATE,
     TRIE_NO_UPDATE,
     TRIE_UPDATE_ERROR,
-    TRIE_SET_VIEW
+    TRIE_SET_VIEW, CONTRACT_DEPLOYED
 } from '../constants/actions'
 
 import type {State, Action} from '../types/types'
@@ -48,6 +48,8 @@ export default (state: Trie = initialState, action: Action) => {
             return {...initialState, updateError: action.payload};
         case TRIE_SET_VIEW:
             return {...state, trieView: action.payload};
+        case CONTRACT_DEPLOYED:
+            return {...initialState, trieView: state.trieView};
         default:
             return state;
     }

@@ -141,22 +141,21 @@ export function updateTrie(): ThunkAction {
             return Promise.resolve();
         }
 
+        nodes.push({
+            id: nodeId++,
+            hash: rootHash,
+            value: ""
+        });
+
         const rootEdge = await patriciaTrieContract.getRootEdge();
 
-        if (rootEdge.node === B32_ZERO && rootEdge.length === 0) {
-            nodes.push({
-                id: 0,
-                hash: rootEdge.node,
-                value: ""
-            });
-        } else {
-            try {
-                await parseTrie(-1, rootEdge);
-            } catch (err) {
-                dispatch(setTrieUpdateError(err.message));
-                return Promise.resolve();
-            }
+        try {
+            await parseTrie(0, rootEdge);
+        } catch (err) {
+            dispatch(setTrieUpdateError(err.message));
+            return Promise.resolve();
         }
+
         dispatch(setTrieUpdate({
             rootHash: rootHash,
             nodes: nodes.sort(compare),
@@ -170,7 +169,7 @@ export function updateTrie(): ThunkAction {
             const id = nodeId++;
             const trieMap = trieSelection.trieMap;
             let value = "";
-            if(trieMap.hashesToValues.has(edge.node)) {
+            if (trieMap.hashesToValues.has(edge.node)) {
                 value = trieMap.hashesToValues.get(edge.node);
             }
 
@@ -180,19 +179,17 @@ export function updateTrie(): ThunkAction {
                 value: value
             });
 
-            if (parentId >= 0) {
-                edges.push({
-                    id: edgeId++,
-                    from: parentId,
-                    to: id,
-                    arrows: 'to',
-                    trieLabel: {
-                        data: edge.data,
-                        dataBin: hashToBin256(edge.data),
-                        length: edge.length
-                    }
-                });
-            }
+            edges.push({
+                id: edgeId++,
+                from: parentId,
+                to: id,
+                arrows: 'to',
+                trieLabel: {
+                    data: edge.data,
+                    dataBin: hashToBin256(edge.data),
+                    length: edge.length
+                }
+            });
             if (children.child0.node !== B32_ZERO) {
                 await parseTrie(id, children.child0);
             }

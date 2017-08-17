@@ -18,14 +18,21 @@ import type {EdgeData, NodeData} from "../actions/trie"
 import {createNullSelection} from "../reducers/trieSelection"
 import {setTrieView} from "../actions/trie";
 
-let graphStyle = {
+const graphStyle = {
     width: "100%",
     height: "400px",
     border: "1px solid lightgray",
     background: "#DCDCDC"
 };
 
-const leafColor: String = "#53BA04";
+// provide the data in the vis format
+const emptyTrieData = {
+    nodes: [],
+    edges: []
+};
+
+const rootColor: string = "#b16ecc";
+const leafColor: string = "#53BA04";
 
 let currentNetwork = null;
 let previousNetwork = null;
@@ -41,12 +48,6 @@ class TrieGraphContainer extends React.Component {
         // create a network
         const currentContainer = document.getElementById('current-trie-graph');
         const previousContainer = document.getElementById('previous-trie-graph');
-
-        // provide the data in the vis format
-        const d = {
-            nodes: [],
-            edges: []
-        };
 
         const options = {
             layout: {
@@ -69,11 +70,9 @@ class TrieGraphContainer extends React.Component {
             }
         };
 
-        // initialize your network!
-        currentNetwork = new vis.Network(currentContainer, d, options);
-        previousNetwork = new vis.Network(previousContainer, d, options);
+        currentNetwork = new vis.Network(currentContainer, emptyTrieData, options);
+        previousNetwork = new vis.Network(previousContainer, emptyTrieData, options);
 
-        // add event listeners
         currentNetwork.on('select', function (params) {
             const trie = this.props.trie.currentTrie;
             if (!trie) {
@@ -118,53 +117,55 @@ class TrieGraphContainer extends React.Component {
         const currentTrie = this.props.trie.currentTrie;
         const previousTrie = this.props.trie.previousTrie;
         const view = this.props.trie.trieView;
-        if (currentTrie && currentNetwork) {
-            const data = {
-                rootHash: currentTrie.rootHash,
-                nodes: currentTrie.nodes.map(formatNode(view)),
-                edges: currentTrie.edges.map(formatEdge(view))
-            };
-            currentNetwork.setData(data);
+        if (currentNetwork) {
+            if (currentTrie) {
+                const data = {
+                    rootHash: currentTrie.rootHash,
+                    nodes: currentTrie.nodes.map(formatNode(view)),
+                    edges: currentTrie.edges.map(formatEdge(view))
+                };
+                currentNetwork.setData(data);
+            } else {
+                currentNetwork.setData(emptyTrieData);
+            }
         }
-        if (previousTrie && previousNetwork) {
-            const data = {
-                rootHash: previousTrie.rootHash,
-                nodes: previousTrie.nodes.map(formatNode(view)),
-                edges: previousTrie.edges.map(formatEdge(view))
-            };
-            previousNetwork.setData(data);
+        if (previousNetwork) {
+            if (previousTrie) {
+                const data = {
+                    rootHash: previousTrie.rootHash,
+                    nodes: previousTrie.nodes.map(formatNode(view)),
+                    edges: previousTrie.edges.map(formatEdge(view))
+                };
+                previousNetwork.setData(data);
+            } else {
+                previousNetwork.setData(emptyTrieData);
+            }
         }
         return (
             <Card>
                 <CardContent>
                     <FormControl>
                         <FormLabel component="legend">Node Labels</FormLabel>
-                    <RadioGroup
-                        row
-                        name="view"
-                        selectedValue={this.props.trie.trieView}
-                        onChange={this.handleRadioChange}
-                    >
-                        <FormControlLabel value="hex" control={<Radio/>} label="Hex"/>
-                        <FormControlLabel value="utf-8" control={<Radio/>} label="Utf-8"/>
-                    </RadioGroup>
+                        <RadioGroup
+                            row
+                            name="view"
+                            selectedValue={this.props.trie.trieView}
+                            onChange={this.handleRadioChange}
+                        >
+                            <FormControlLabel value="hex" control={<Radio/>} label="Hex"/>
+                            <FormControlLabel value="utf-8" control={<Radio/>} label="Utf-8"/>
+                        </RadioGroup>
                     </FormControl>
                     <Grid container spacing={8}>
                         <Grid item xs={6}>
                             <Typography type="headline">
                                 Current Trie
                             </Typography>
-                            <Typography type="body1">
-                                Root: {currentTrie ? currentTrie.rootHash : "-"}
-                            </Typography>
                             <div id="current-trie-graph" style={graphStyle}/>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography type="headline">
                                 Previous Trie
-                            </Typography>
-                            <Typography type="body1">
-                                Root: {previousTrie ? previousTrie.rootHash : "-"}
                             </Typography>
                             <div id="previous-trie-graph" style={graphStyle}/>
                         </Grid>
@@ -188,6 +189,9 @@ function formatNode(view: TrieView): (nodeData: NodeData) => NodeData {
             case 'utf-8':
                 nodeData.label = nodeData.value.length > 10 ? nodeData.value.substr(0, 10) + "..." : nodeData.value;
                 break;
+        }
+        if (nodeData.id === 0) {
+            nodeData.color = rootColor;
         }
         if (nodeData.value !== "") {
             nodeData.color = leafColor;
